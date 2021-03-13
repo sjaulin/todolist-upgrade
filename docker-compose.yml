@@ -1,0 +1,47 @@
+version: "3"
+services:
+  php-apache:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    environment:
+      XDEBUG_CONFIG: remote_host=host.docker.internal remote_port=9000 remote_enable=1
+    ports:
+      - 80:80
+    volumes:
+      - ./web:/var/www/html:z
+      - ./vendor:/var/www/vendor
+      - ./src:/var/www/src
+      - ./app:/var/www/app
+      - ./var:/var/www/var
+      - ./bin:/var/www/bin
+    links:
+      - "mariadb"
+
+  mariadb:
+    image: mariadb:10.1
+    volumes:
+      - mariadb:/var/lib/mysql
+    environment:
+      TZ: "Europe/Rome"
+      MYSQL_ALLOW_EMPTY_PASSWORD: "no"
+      MYSQL_ROOT_PASSWORD: rootpwd
+      MYSQL_USER: "testuser"
+      MYSQL_PASSWORD: "testpassword"
+      MYSQL_DATABASE: "testdb"
+    ports:
+      - "3306:3306"
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    links:
+      - mariadb:mysql
+    ports:
+      - 8000:80
+    environment:
+      MYSQL_USER: testuser
+      MYSQL_PASSWORD: testpassword
+      MYSQL_ROOT_PASSWORD: rootpwd
+      PMA_HOST: mysql
+
+volumes:
+  mariadb:
