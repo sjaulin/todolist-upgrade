@@ -30,6 +30,10 @@ framework:
     fragments:       ~
     http_method_override: true
     assets: ~
+    
+sensio_framework_extra:
+ router:
+     annotations: false
 
 # Twig Configuration
 twig:
